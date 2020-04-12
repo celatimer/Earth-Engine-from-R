@@ -1,8 +1,12 @@
 ---
-title: "Earth_Engine_from_R"
-author: "ChrisLatimer"
+title: "Using EarthEngine & Python from R"
+author: "Chris Latimer"
 date: "4/12/2020"
-output: html_document
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 ---
 
 ```{r setup, include=FALSE}
