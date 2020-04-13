@@ -29,9 +29,7 @@ conda install numpy
 ```
 
 Next, in R, load the following libraries and initalize earth engine. You will be prompted to log-in to your EarthEngine account. 
-```{r echo=FALSE}
-yourpath = "/Users/christopherlatimer/opt/anaconda3/envs"
-```
+
 ```{r message=FALSE, warning=FALSE}
 # load libraries
 library(reticulate) # interface with python
