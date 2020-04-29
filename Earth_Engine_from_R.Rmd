@@ -2,11 +2,9 @@
 title: "Using EarthEngine & Python from R"
 author: "Chris Latimer"
 date: "4/12/2020"
-knit: (function(input_file, encoding) {
-  out_dir <- 'docs';
-  rmarkdown::render(input_file,
- encoding=encoding,
- output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -49,6 +47,7 @@ library(sf)
 library(dplyr)
 library(landscapemetrics)
 library(maps)
+library(mapview)
 
 # Point to the Conda environment you just created in the first step
 use_condaenv("gee-demo", conda = paste(yourpath, "gee-demo", sep = "/"), required = T)
@@ -72,15 +71,21 @@ hm_col = ee$
 # select the first image of the collection which corresponds to the cumulative HM  
 hm = hm_col$first()
 
-# plot map of HM
-ee_map(eeobject = hm,
+# plot interactive map of HM
+map <- ee_map(eeobject = hm,
        bands = c('gHM'),
        vizparams = list(palette = list('blue','green','yellow','orange','red','magenta'), 
                         min = 0,
                         max = 1),
        center = c( -101.299591, 47.116386),
        zoom_start = 3) 
+
+# Save map as static .png file in your working directory
+mapshot(map, file = paste0(getwd(), "/map.png"), remove_controls = NULL)
 ```
+
+![](map.png)
+
 
 Now, let's clip the gHM layer by a polygon. I'll use Colorado as an example, but you can use any shapefile you can import into R. The last bit of code will apply the median reducer to calculate the median gHM value across all pixels within the polygon feature. 
 
@@ -94,13 +99,19 @@ states = sf_as_ee(states)
 # Clip HM layer to Colorado polygon
 coloradoHM = hm$clip(states)$rename('COHM')
 # Plot the clipped layer
-ee_map(eeobject = coloradoHM,
+CO_map <- ee_map(eeobject = coloradoHM,
        bands = c('gHM'),
        vizparams = list(palette = list('blue','green','yellow','orange','red','magenta'), 
                         min = 0,
                         max = 1),
        center = c(-104.991531, 39.742043),
        zoom_start = 5)
+
+mapshot(CO_map, file = paste0(getwd(), "/co_map.png"), remove_controls = NULL)
+```
+
+![](co_map.png)
+```{r warning=FALSE, message=FALSE}
 # Get median HM for Colorado
 median_hm = hm$reduceRegion(reducer = ee$Reducer$median(),
                               geometry = states)$getInfo()[[1]]
